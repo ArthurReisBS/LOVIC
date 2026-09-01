@@ -30,6 +30,7 @@ Dois pilares sustentam a proposta:
 .
 ├── docs/          # documentação escrita: problema, público-alvo, MVP e marca
 ├── design/        # logo, paleta de cores e tipografia
+├── assets/images  # prints das telas do APP
 ├── lib/           # código-fonte do app Flutter
 └── README.md
 ```
@@ -41,7 +42,19 @@ Dois pilares sustentam a proposta:
 | [`docs/problema-publico-mvp.md`](docs/problema-publico-mvp.md) | Problema que o app resolve, público-alvo e funcionalidades do MVP | Isabelle |
 | [`docs/marca.md`](docs/marca.md) | *Naming rationale* e tom de voz da marca | Carol |
 | [`docs/pitch.md`](docs/pitch.md) | Modelo de negócio e diferencial competitivo | Manoella |
-| [`design/`](design/) | Logo, paleta de cores (hex) e tipografia | Léo |
+| [`design/`](design/) | Logo, paleta de cores (hex) e tipografia | Leo |
+
+---
+
+## Telas
+
+Mostrando a identidade do APP com imagens das telas principais:
+
+| Tela do feed | Tela incial | Tela de perfil |
+|----------|----------|----------|
+| ![feed](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/Feed.png) | ![home](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaHome.png) |  ![perfil](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaPerfil.png) |
+
+
 
 ---
 
