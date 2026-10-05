@@ -58,6 +58,8 @@ class _ProfileCardState extends State<ProfileCard> {
             // Foto real quando disponível; senão, placeholder de cor sólida.
             profile.photoAsset != null
                 ? Image.asset(profile.photoAsset!, fit: BoxFit.cover)
+                : profile.photoUrl != null
+                ? Image.network(profile.photoUrl!, fit: BoxFit.cover)
                 : Container(color: profile.photoColor),
             AnimatedOpacity(
               opacity: _holding ? 0 : 1,
