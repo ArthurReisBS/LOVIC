@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/ui/em_breve.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/home/genre_chip.dart';
 import '../../widgets/shared/app_background.dart';
@@ -18,7 +19,7 @@ class ProfileDetailScreen extends StatelessWidget{
   }
   @override Widget build(BuildContext context)=>Scaffold(
     body:AppBackground(child:SafeArea(child:CustomScrollView(slivers:[
-      SliverAppBar(backgroundColor:Colors.transparent,leading:IconButton(onPressed:()=>Navigator.pop(context),icon:const Icon(Icons.chevron_left)),actions:[IconButton(onPressed:(){},icon:const Icon(Icons.more_vert))]),
+      SliverAppBar(backgroundColor:Colors.transparent,leading:IconButton(onPressed:()=>Navigator.pop(context),icon:const Icon(Icons.chevron_left)),actions:[IconButton(onPressed:()=>mostrarEmBreve(context),icon:const Icon(Icons.more_vert))]),
       SliverToBoxAdapter(child:Padding(padding:const EdgeInsets.fromLTRB(24,8,24,32),child:Column(children:[
         ClipRRect(borderRadius:BorderRadius.circular(28),child:SizedBox(width:280,height:280,child:profile.photoAsset!=null?Image.asset(profile.photoAsset!,fit:BoxFit.cover):Container(color:profile.photoColor,child:Center(child:Text(profile.name.substring(0,1),style:const TextStyle(fontSize:72)))))),
         const SizedBox(height:20),Text(profile.name,style:AppTextStyles.screenTitle.copyWith(fontSize:32)),

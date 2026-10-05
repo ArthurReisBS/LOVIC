@@ -23,7 +23,7 @@ class ConversationsScreen extends StatelessWidget{
       const SizedBox(height:16),const Center(child:LovicLogo(fontSize:32)),const SizedBox(height:8),
       Padding(padding:const EdgeInsets.symmetric(horizontal:24),child:Text('Chats',style:AppTextStyles.heading)),
       const SizedBox(height:12),
-      Expanded(child:ListView.separated(padding:const EdgeInsets.symmetric(horizontal:24,vertical:8),itemCount:_conversations.length,separatorBuilder:(_,__)=>const SizedBox(height:12),
+      Expanded(child:ListView.separated(padding:const EdgeInsets.symmetric(horizontal:24,vertical:8),itemCount:_conversations.length,separatorBuilder:(_,_)=>const SizedBox(height:12),
         itemBuilder:(context,i)=>_ConversationTile(conversation:_conversations[i])))
     ]))),
     bottomNavigationBar:AppBottomNav(currentIndex:3,onTap:(i)=>goToTab(context,i))

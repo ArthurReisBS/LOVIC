@@ -6,6 +6,9 @@ import '../../models/user_profile.dart';
 import '../../widgets/home/app_bottom_nav.dart';
 import '../../widgets/shared/app_background.dart';
 
+/// Quantidade de itens de exemplo mostrados abaixo; o sino da Home usa o
+/// mesmo valor para o contador não mentir.
+const int notificacoesDeExemplo=1;
 class NotificationScreen extends StatelessWidget{
   const NotificationScreen({super.key});
   @override Widget build(BuildContext context)=>Scaffold(

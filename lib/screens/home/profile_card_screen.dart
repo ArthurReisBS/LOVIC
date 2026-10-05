@@ -3,6 +3,7 @@ import '../../core/navigation/app_tabs.dart';
 import '../../core/navigation/no_transition_route.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/ui/em_breve.dart';
 import '../../models/user_profile.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/home/app_bottom_nav.dart';
@@ -125,6 +126,8 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
               onMessage: () => Navigator.of(context).push(
                 noTransitionRoute(ChatTalkScreen(profile: p)),
               ),
+              onLocation: () =>
+                  mostrarEmBreve(context, 'Localização chega no CP06.'),
             ),
           );
         },
