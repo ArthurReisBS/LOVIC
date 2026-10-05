@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/config/supabase_config.dart';
 import 'core/theme/app_colors.dart';
 import 'screens/auth/login_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (SupabaseConfig.isConfigured) {
+    await Supabase.initialize(
+      url: SupabaseConfig.url,
+      publishableKey: SupabaseConfig.publishableKey,
+    );
+  }
   runApp(const ProviderScope(child: LovicApp()));
 }
 
@@ -28,7 +39,8 @@ class LovicApp extends StatelessWidget {
           ThemeData(brightness: Brightness.dark).textTheme,
         ),
       ),
-      home: const LoginScreen(),
+      // Sessão salva de antes: entra direto, sem pedir login de novo.
+      home: AuthService.isLoggedIn ? const HomeScreen() : const LoginScreen(),
     );
   }
 }

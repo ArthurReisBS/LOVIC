@@ -52,6 +52,7 @@ dependencies:
   flutter_web_auth_2: ^4.1.0
   # 14.0.2 is the newest release compatible with the project's Dart 3.9 SDK.
   geolocator: ^14.0.2
+  supabase_flutter: ^2.18.0
 
 dev_dependencies:
   flutter_test:
