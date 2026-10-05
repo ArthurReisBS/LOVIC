@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme/genre_colors.dart';
+import '../core/theme/music_genres.dart';
 import 'user_profile.dart';
 
 /// Funções puras que transformam uma linha de `public.profiles` em
@@ -24,6 +25,8 @@ const List<Color> _coresDeExemplo = [
   Color(0xFF6A8C5D),
   Color(0xFF7A5D8C),
 ];
+
+String? nullIfBlank(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
 
 /// Hash simples e estável (o `hashCode` do Dart pode mudar entre execuções).
 int _hashEstavel(String texto) {
@@ -70,6 +73,8 @@ UserProfile perfilDeLinha(Map<String, dynamic> row, {DateTime? hoje}) {
   final bio = (row['bio'] as String? ?? '').trim();
   final nascimento = DateTime.tryParse(row['data_nascimento'] as String? ?? '');
   final username = row['username'] as String?;
+  final generos = (row['generos'] as List?)?.whereType<String>().toList();
+  final fotos = (row['fotos'] as List?)?.whereType<String>().toList() ?? [];
   final nomeCompleto = [nome, sobrenome].where((t) => t.isNotEmpty).join(' ');
   return UserProfile(
     id: id,
@@ -78,7 +83,15 @@ UserProfile perfilDeLinha(Map<String, dynamic> row, {DateTime? hoje}) {
     // O nome nunca fica vazio: as telas usam a primeira letra dele.
     name: nomeCompleto.isNotEmpty ? nomeCompleto : (username ?? 'Sem nome'),
     bio: bio.isEmpty ? bioPadrao : bio,
-    genres: generosDeExemplo(id),
+    // Sem gêneros escolhidos (coluna ausente/vazia) cai nos de exemplo.
+    genres: (generos == null || generos.isEmpty)
+        ? generosDeExemplo(id)
+        : generos.map(genreFromName).toList(),
     photoColor: corDeExemplo(id),
+    photoUrl: nullIfBlank(row['foto_url'] as String?),
+    photos: fotos,
+    gender: nullIfBlank(row['genero'] as String?),
+    sexuality: nullIfBlank(row['sexualidade'] as String?),
+    heightCm: row['altura_cm'] as int?,
   );
 }

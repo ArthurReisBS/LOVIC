@@ -27,6 +27,15 @@ class UserProfile {
   final Color photoColor;
   final String? photoAsset;
 
+  /// Foto de perfil (URL do Storage) e demais fotos, só em perfis reais.
+  final String? photoUrl;
+  final List<String> photos;
+
+  /// Informações pessoais opcionais, só em perfis reais.
+  final String? gender;
+  final String? sexuality;
+  final int? heightCm;
+
   const UserProfile({
     this.id,
     this.username,
@@ -36,6 +45,11 @@ class UserProfile {
     required this.genres,
     required this.photoColor,
     this.photoAsset,
+    this.photoUrl,
+    this.photos = const [],
+    this.gender,
+    this.sexuality,
+    this.heightCm,
   });
 }
 

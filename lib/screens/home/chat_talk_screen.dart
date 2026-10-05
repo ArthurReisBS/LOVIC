@@ -1,4 +1,5 @@
-// MOCK: depende de tabelas de chat/notificações (CP06).
+// Mensagens só existem na tela (sem tabela de chat ainda, CP06): tudo que é
+// enviado aparece do lado do usuário e nada é inventado pelo outro lado.
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -13,7 +14,7 @@ class ChatTalkScreen extends StatefulWidget{
 }
 class _ChatTalkScreenState extends State<ChatTalkScreen>{
   final _controller=TextEditingController();
-  final List<String> _messages=['Olá! Tudo bem?','Olá! Estou bem e você?'];
+  final List<String> _messages=[];
   @override void dispose(){_controller.dispose();super.dispose();}
   void _send(){final text=_controller.text.trim();if(text.isEmpty)return;setState((){_messages.add(text);_controller.clear();});}
   @override Widget build(BuildContext context)=>Scaffold(
@@ -21,16 +22,15 @@ class _ChatTalkScreenState extends State<ChatTalkScreen>{
       Container(padding:const EdgeInsets.fromLTRB(16,16,16,18),decoration:const BoxDecoration(color:AppColors.surfaceDark),
         child:Row(children:[
           IconButton(onPressed:()=>Navigator.pop(context),icon:const Icon(Icons.chevron_left)),
-          CircleAvatar(radius:28,backgroundColor:widget.profile.photoColor,backgroundImage:widget.profile.photoAsset!=null?AssetImage(widget.profile.photoAsset!):null),
+          CircleAvatar(radius:28,backgroundColor:widget.profile.photoColor,backgroundImage:widget.profile.photoAsset!=null?AssetImage(widget.profile.photoAsset!):widget.profile.photoUrl!=null?NetworkImage(widget.profile.photoUrl!) as ImageProvider:null),
           const SizedBox(width:14),
-          Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(widget.profile.name,style:AppTextStyles.bodyBold),Text('online',style:AppTextStyles.hint)]),
+          Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(widget.profile.name,style:AppTextStyles.bodyBold),Text(widget.profile.username!=null?'@${widget.profile.username}':'',style:AppTextStyles.hint)]),
           const Spacer(),IconButton(onPressed:()=>mostrarEmBreve(context),icon:const Icon(Icons.more_vert))
         ])),
-      Expanded(child:ListView.builder(padding:const EdgeInsets.fromLTRB(24,28,24,20),itemCount:_messages.length,itemBuilder:(context,index){
-        final mine=index.isOdd;
-        return Align(alignment:mine?Alignment.centerRight:Alignment.centerLeft,child:Container(
+      Expanded(child:_messages.isEmpty?Center(child:Text('Diga oi para ${widget.profile.name}!',style:AppTextStyles.hint)):ListView.builder(padding:const EdgeInsets.fromLTRB(24,28,24,20),itemCount:_messages.length,itemBuilder:(context,index){
+        return Align(alignment:Alignment.centerRight,child:Container(
           margin:const EdgeInsets.only(bottom:24),padding:const EdgeInsets.symmetric(horizontal:20,vertical:14),
-          decoration:BoxDecoration(color:mine?AppColors.specialGradientStart:AppColors.surfaceDark,borderRadius:BorderRadius.circular(22)),
+          decoration:BoxDecoration(color:AppColors.specialGradientStart,borderRadius:BorderRadius.circular(22)),
           child:Text(_messages[index],style:AppTextStyles.body)));
       })),
       Padding(padding:const EdgeInsets.fromLTRB(16,8,16,12),child:Row(children:[

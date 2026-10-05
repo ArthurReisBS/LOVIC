@@ -53,6 +53,8 @@ dependencies:
   # 14.0.2 is the newest release compatible with the project's Dart 3.9 SDK.
   geolocator: ^14.0.2
   supabase_flutter: ^2.18.0
+  # Escolher foto da galeria para o avatar e a lista de fotos.
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
