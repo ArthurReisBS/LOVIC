@@ -73,6 +73,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (!mounted) return;
       _showMessage(e.message);
       Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      _showMessage('Não foi possível carregar seu perfil.');
+      Navigator.pop(context);
     }
   }
 

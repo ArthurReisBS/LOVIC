@@ -2,6 +2,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/config/supabase_config.dart';
 import '../models/register_draft.dart';
+import '../models/user_profile.dart';
+import '../models/user_profile_mapper.dart';
 
 /// Erro de cadastro/login já com a mensagem pronta para mostrar na tela.
 class AuthFailure implements Exception {
@@ -107,6 +109,23 @@ class AuthService {
           .maybeSingle(),
     );
     return row == null ? null : MyProfile.fromRow(row);
+  }
+
+  /// Outras pessoas cadastradas, das mais novas para as mais antigas. Sem
+  /// banco (modo demonstração) devolve os perfis de exemplo.
+  static Future<List<UserProfile>> fetchOtherProfiles({int limit = 50}) async {
+    if (!SupabaseConfig.isConfigured) return mockProfiles;
+    final user = _client.auth.currentUser;
+    if (user == null) throw const AuthFailure('Sessão expirada. Entre de novo.');
+    final rows = await _guard(
+      () => _client
+          .from('profiles')
+          .select('id, nome, sobrenome, username, bio, data_nascimento')
+          .neq('id', user.id)
+          .order('criado_em', ascending: false)
+          .limit(limit),
+    );
+    return rows.map(perfilDeLinha).toList();
   }
 
   /// Atualiza nome, sobrenome e bio de quem está logado. O username não muda
