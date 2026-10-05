@@ -34,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen>{
         const SizedBox(height:20),
         GradientButton(label:_loading?'Entrando...':'Entrar',onPressed:_loading?null:_signIn),
         const _OrDivider(),
-        SocialLoginButton(icon:Padding(padding:const EdgeInsets.only(left:20),child:SizedBox(width:20,height:20,child:SvgPicture.asset('assets/images/google_logo.svg'))),label:'Login com Google',backgroundColor:AppColors.socialButtonLight,textColor:AppColors.textSecondary,onPressed:()=>_goHome(context)),
+        SocialLoginButton(icon:Padding(padding:const EdgeInsets.only(left:20),child:SizedBox(width:20,height:20,child:SvgPicture.asset('assets/images/google_logo.svg'))),label:'Login com Google',backgroundColor:AppColors.socialButtonLight,textColor:AppColors.textSecondary,onPressed:_socialLogin),
         const SizedBox(height:16),
-        SocialLoginButton(icon:const Padding(padding:EdgeInsets.only(left:20),child:FaIcon(FontAwesomeIcons.spotify,color:AppColors.spotifyGreen,size:22)),label:'Login com Spotify',backgroundColor:AppColors.socialButtonSpotify,textColor:AppColors.textPrimary,onPressed:()=>_goHome(context)),
+        SocialLoginButton(icon:const Padding(padding:EdgeInsets.only(left:20),child:FaIcon(FontAwesomeIcons.spotify,color:AppColors.spotifyGreen,size:22)),label:'Login com Spotify',backgroundColor:AppColors.socialButtonSpotify,textColor:AppColors.textPrimary,onPressed:_socialLogin),
         const SizedBox(height:24),
         HoverScale(child:GestureDetector(onTap:()=>Navigator.of(context).push(noTransitionRoute(const RegisterScreen())),child:Text('Criar uma conta',style:AppTextStyles.linkOrange)))
       ])),
@@ -56,6 +56,12 @@ class _LoginScreenState extends State<LoginScreen>{
     }finally{
       if(mounted)setState(()=>_loading=false);
     }
+  }
+  // Google e Spotify chegam no CP06. Com banco, entrar na Home sem sessão
+  // deixaria o Meu Perfil vazio, então só avisa; na demonstração entra direto.
+  void _socialLogin(){
+    if(SupabaseConfig.isConfigured)return _showError('Login com Google/Spotify chega no CP06. Use email e senha.');
+    _goHome(context);
   }
   void _showError(String message)=>ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(message)));
   void _goHome(BuildContext context)=>Navigator.of(context).pushAndRemoveUntil(noTransitionRoute(const HomeScreen()),(_)=>false);

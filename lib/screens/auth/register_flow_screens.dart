@@ -20,7 +20,7 @@ class RegisterOtpScreen extends StatefulWidget {
 class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
   final _controllers = List.generate(6, (_) => TextEditingController());
   @override
-  void dispose(){for(final c in _controllers)c.dispose();super.dispose();}
+  void dispose(){for(final c in _controllers){c.dispose();}super.dispose();}
   @override
   Widget build(BuildContext context)=>_RegisterScaffold(child:Column(children:[
     const LovicLogo(fontSize:64),const SizedBox(height:48),
@@ -95,7 +95,7 @@ class _RegisterProfileScreenState extends State<RegisterProfileScreen>{
   @override Widget build(BuildContext context)=>_RegisterScaffold(compact:true,child:Column(children:[
     const LovicLogo(fontSize:38),const SizedBox(height:42),
     Text('Vamos personalizar seu perfil',style:AppTextStyles.heading,textAlign:TextAlign.center),const SizedBox(height:42),
-    GestureDetector(onTap:(){},child:Container(width:180,height:180,decoration:const BoxDecoration(shape:BoxShape.circle,color:AppColors.surfaceDark),
+    GestureDetector(onTap:()=>_showError(context,'Foto de perfil chega no CP06.'),child:Container(width:180,height:180,decoration:const BoxDecoration(shape:BoxShape.circle,color:AppColors.surfaceDark),
       alignment:Alignment.center,child:const Text('T',style:TextStyle(fontSize:64,color:AppColors.textPrimary)))),
     const SizedBox(height:12),Text('Escolha sua melhor foto',style:AppTextStyles.hint),const SizedBox(height:30),
     Align(alignment:Alignment.centerLeft,child:Text('Username:',style:AppTextStyles.bodyBold)),const SizedBox(height:10),

@@ -27,9 +27,9 @@ class _RegisterScreenState extends State<RegisterScreen>{
         const LovicLogo(fontSize:64),Text('Novo aqui?',style:AppTextStyles.heading),
         AuthTextField(controller:_email,hintText:'Digite seu melhor email...',keyboardType:TextInputType.emailAddress),
         Row(children:[Expanded(child:Divider(color:AppColors.textMuted.withValues(alpha:.4))),Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Text('ou',style:AppTextStyles.hint)),Expanded(child:Divider(color:AppColors.textMuted.withValues(alpha:.4)))]),
-        SocialLoginButton(icon:Padding(padding:const EdgeInsets.only(left:20),child:SizedBox(width:20,height:20,child:SvgPicture.asset('assets/images/google_logo.svg'))),label:'Criar com Google',backgroundColor:AppColors.socialButtonLight,textColor:AppColors.textSecondary,onPressed:_continue),
+        SocialLoginButton(icon:Padding(padding:const EdgeInsets.only(left:20),child:SizedBox(width:20,height:20,child:SvgPicture.asset('assets/images/google_logo.svg'))),label:'Criar com Google',backgroundColor:AppColors.socialButtonLight,textColor:AppColors.textSecondary,onPressed:_socialSignUp),
         const SizedBox(height:16),
-        SocialLoginButton(icon:const Padding(padding:EdgeInsets.only(left:20),child:FaIcon(FontAwesomeIcons.spotify,color:AppColors.spotifyGreen,size:22)),label:'Criar com Spotify',backgroundColor:AppColors.socialButtonSpotify,textColor:AppColors.textPrimary,onPressed:_continue),
+        SocialLoginButton(icon:const Padding(padding:EdgeInsets.only(left:20),child:FaIcon(FontAwesomeIcons.spotify,color:AppColors.spotifyGreen,size:22)),label:'Criar com Spotify',backgroundColor:AppColors.socialButtonSpotify,textColor:AppColors.textPrimary,onPressed:_socialSignUp),
         const SizedBox(height:24),
         HoverScale(child:GestureDetector(onTap:()=>Navigator.pop(context),child:Text('Já tem uma conta?',style:AppTextStyles.linkOrange))),
         TextButton(onPressed:_continue,child:Text('Continuar com email',style:AppTextStyles.linkOrange))
@@ -39,6 +39,14 @@ class _RegisterScreenState extends State<RegisterScreen>{
   // Cadastro direto, sem a tela de código (RegisterOtpScreen fica para o
   // CP06): o plano gratuito do Supabase manda poucos emails por hora.
   // Google e Spotify ainda não têm login real, então seguem o mesmo fluxo.
+  // Google e Spotify chegam no CP06: com banco só avisa, sem seguir com email vazio.
+  void _socialSignUp(){
+    if(SupabaseConfig.isConfigured){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Login com Google/Spotify chega no CP06. Use email e senha.')));
+      return;
+    }
+    _continue();
+  }
   void _continue(){
     final email=_email.text.trim();
     if(SupabaseConfig.isConfigured&&!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)){
