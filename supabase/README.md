@@ -23,9 +23,15 @@ Sem o `--dart-define-from-file=.env` o app abre em **modo demonstração**: as t
 | Onde | O quê |
 | ---- | ----- |
 | `auth.users` | conta: email e senha (gerenciada pelo Supabase) |
-| `public.profiles` | nome, sobrenome, data de nascimento, username, bio, foto — criado automaticamente no cadastro |
+| `public.profiles` | nome, sobrenome, data de nascimento, username, bio, foto — criado automaticamente no cadastro. **Nome, sobrenome e bio são editáveis** no app (o username não) |
 
 Regras (RLS): quem está logado vê os perfis; cada um só edita o próprio.
+
+### O que continua de exemplo (não está no banco)
+
+- **Gêneros musicais** e **cor/foto do perfil**: gerados de forma fixa a partir do `id` até a integração com o Spotify e o upload de fotos (CP06).
+- **Conversas, chat e notificações**: dados de exemplo, não existem tabelas para isso.
+- **Login com Google/Spotify**, busca por lugares, localização, câmera e menus de três pontinhos: avisam "Em breve" / "chega no CP06".
 
 ## Como testar
 
@@ -34,3 +40,6 @@ Regras (RLS): quem está logado vê os perfis; cada um só edita o próprio.
 3. Ícone de perfil na barra de baixo → nome e `@username` vindos do banco.
 4. Feche e abra o app: entra direto (sessão salva).
 5. Login com senha errada → "Email ou senha incorretos."
+6. **Editar perfil**: Meu Perfil → *Editar perfil* (ou Configurações → *Perfil*) → mude nome e bio → *Salvar*. A tela mostra os dados novos e a linha em `profiles` muda.
+7. **Ver outros perfis**: crie uma segunda conta (outro email) e entre com a primeira → *Encontre um par* (ou ícone do feed) → a segunda conta aparece no feed, com username e idade reais. *Ver perfil* abre o perfil dela.
+8. **Sair da conta**: Configurações → *Sair* → confirmar → volta ao login. Feche e abra o app: continua no login.
