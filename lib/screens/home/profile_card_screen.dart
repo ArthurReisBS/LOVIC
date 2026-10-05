@@ -6,8 +6,10 @@ import '../../widgets/home/profile_card.dart';
 import '../../widgets/shared/app_background.dart';
 import '../../widgets/shared/lovic_logo.dart';
 
-/// Tela de card de perfil: navega pelos perfis mockados, um por vez,
-/// em formato de foto cheia com informações sobrepostas.
+/// Tela de apresentação visual ainda ligada ao mock legado.
+///
+/// A integração da Isabelle deve consumir DiscoveryRepository quando o
+/// DataSource do Arthur estiver disponível; não existe fallback real para mock.
 class ProfileCardScreen extends StatefulWidget {
   const ProfileCardScreen({super.key});
 
