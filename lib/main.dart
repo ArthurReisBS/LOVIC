@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/app_colors.dart';
 import 'screens/auth/login_screen.dart';
 
 void main() {
-  runApp(const LovicApp());
+  runApp(const ProviderScope(child: LovicApp()));
 }
 
 class LovicApp extends StatelessWidget {
@@ -23,7 +24,9 @@ class LovicApp extends StatelessWidget {
           seedColor: AppColors.primary,
           brightness: Brightness.dark,
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(ThemeData(brightness: Brightness.dark).textTheme),
+        textTheme: GoogleFonts.poppinsTextTheme(
+          ThemeData(brightness: Brightness.dark).textTheme,
+        ),
       ),
       home: const LoginScreen(),
     );

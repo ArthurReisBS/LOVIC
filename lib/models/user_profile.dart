@@ -30,7 +30,8 @@ class UserProfile {
   });
 }
 
-/// Perfis mockados para testar as telas enquanto não há backend.
+// MOCK: demonstração visual legada. O fluxo real de descoberta usa
+// DiscoveryRepository e nunca faz fallback silencioso para esta lista.
 final List<UserProfile> mockProfiles = [
   const UserProfile(
     name: 'Carla Silva',

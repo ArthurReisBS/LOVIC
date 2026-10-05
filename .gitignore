@@ -1,6 +1,11 @@
 # Ferramentas de IA / assistentes locais
 .claude/
 
+# Segredos locais (versione apenas modelos sem credenciais).
+.env
+.env.*
+!.env.example
+
 # Miscellaneous
 *.class
 *.log
