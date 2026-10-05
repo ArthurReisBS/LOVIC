@@ -1,3 +1,4 @@
+// MOCK: depende de tabelas de chat/notificações (CP06).
 import 'package:flutter/material.dart';
 import '../../core/navigation/app_tabs.dart';
 import '../../core/navigation/no_transition_route.dart';
