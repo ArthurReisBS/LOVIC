@@ -75,3 +75,39 @@ as $$
 $$;
 
 grant execute on function public.username_disponivel(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Edição de perfil: gêneros musicais, informações pessoais e fotos.
+-- ---------------------------------------------------------------------------
+alter table public.profiles add column if not exists generos      text[] not null default '{}';
+alter table public.profiles add column if not exists genero       text;
+alter table public.profiles add column if not exists sexualidade  text;
+alter table public.profiles add column if not exists altura_cm    int;
+alter table public.profiles add column if not exists fotos        text[] not null default '{}';
+
+-- Bucket público "fotos": cada usuário só escreve dentro da pasta com o
+-- próprio id (<uid>/arquivo.jpg); qualquer um pode ver.
+insert into storage.buckets (id, name, public)
+values ('fotos', 'fotos', true)
+on conflict (id) do nothing;
+
+drop policy if exists "fotos visiveis" on storage.objects;
+create policy "fotos visiveis"
+  on storage.objects for select
+  using (bucket_id = 'fotos');
+
+drop policy if exists "usuario envia as proprias fotos" on storage.objects;
+create policy "usuario envia as proprias fotos"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'fotos' and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists "usuario apaga as proprias fotos" on storage.objects;
+create policy "usuario apaga as proprias fotos"
+  on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'fotos' and (storage.foldername(name))[1] = auth.uid()::text
+  );

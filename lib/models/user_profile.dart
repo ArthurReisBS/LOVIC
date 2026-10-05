@@ -14,19 +14,42 @@ class ProfileGenre {
 /// [photoColor] é usado como placeholder visual da foto quando não há
 /// [photoAsset] definido, já que ainda não existe integração real com
 /// upload/armazenamento de imagens.
+///
+/// [id], [username] e [age] só existem em perfis reais vindos do Supabase;
+/// nos perfis de exemplo ficam nulos.
 class UserProfile {
+  final String? id;
+  final String? username;
+  final int? age;
   final String name;
   final String bio;
   final List<ProfileGenre> genres;
   final Color photoColor;
   final String? photoAsset;
 
+  /// Foto de perfil (URL do Storage) e demais fotos, só em perfis reais.
+  final String? photoUrl;
+  final List<String> photos;
+
+  /// Informações pessoais opcionais, só em perfis reais.
+  final String? gender;
+  final String? sexuality;
+  final int? heightCm;
+
   const UserProfile({
+    this.id,
+    this.username,
+    this.age,
     required this.name,
     required this.bio,
     required this.genres,
     required this.photoColor,
     this.photoAsset,
+    this.photoUrl,
+    this.photos = const [],
+    this.gender,
+    this.sexuality,
+    this.heightCm,
   });
 }
 

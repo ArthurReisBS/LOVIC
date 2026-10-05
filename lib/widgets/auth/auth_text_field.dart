@@ -15,6 +15,10 @@ class AuthTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final VoidCallback? onTap;
 
+  /// Para campos multilinha (bio). [maxLength] mostra o contador de caracteres.
+  final int maxLines;
+  final int? maxLength;
+
   const AuthTextField({
     super.key,
     this.hintText,
@@ -25,6 +29,8 @@ class AuthTextField extends StatelessWidget {
     this.borderColor = AppColors.primary,
     this.suffixIcon,
     this.onTap,
+    this.maxLines = 1,
+    this.maxLength,
   });
 
   @override
@@ -33,6 +39,8 @@ class AuthTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      maxLines: obscureText ? 1 : maxLines,
+      maxLength: maxLength,
       readOnly: readOnly,
       onTap: onTap,
       style: AppTextStyles.body,
@@ -42,6 +50,7 @@ class AuthTextField extends StatelessWidget {
         filled: true,
         fillColor: Colors.transparent,
         suffixIcon: suffixIcon,
+        counterStyle: AppTextStyles.hint,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),

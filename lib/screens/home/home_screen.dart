@@ -5,6 +5,7 @@ import '../../core/navigation/no_transition_route.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/genre_colors.dart';
+import '../../core/ui/em_breve.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/auth/gradient_button.dart';
 import '../../widgets/home/app_bottom_nav.dart';
@@ -33,7 +34,7 @@ class HomeScreen extends StatelessWidget{
         const SizedBox(height:10),Text('Localização atual',style:AppTextStyles.hint),const SizedBox(height:32),
         GradientButton(label:'Encontre um par',height:50,onPressed:()=>Navigator.of(context).push(noTransitionRoute(const ProfileCardScreen()))),
         const SizedBox(height:40),Text('Explore gêneros musicais',style:AppTextStyles.bodyBold),const SizedBox(height:18),
-        SizedBox(height:30,child:ListView.separated(scrollDirection:Axis.horizontal,itemCount:_genres.length,separatorBuilder:(_,__)=>const SizedBox(width:8),itemBuilder:(context,i){
+        SizedBox(height:30,child:ListView.separated(scrollDirection:Axis.horizontal,itemCount:_genres.length,separatorBuilder:(_,_)=>const SizedBox(width:8),itemBuilder:(context,i){
           final g=_genres[i];return HomeGenreChip(label:g.name,variant:g.variant);
         })),
       ])
@@ -45,12 +46,22 @@ class _NotificationBell extends StatelessWidget{
   const _NotificationBell();
   @override Widget build(BuildContext context)=>Stack(clipBehavior:Clip.none,children:[
     const Icon(Icons.notifications_none,color:Colors.white70,size:26),
-    Positioned(right:-2,top:-2,child:Container(width:14,height:14,alignment:Alignment.center,decoration:const BoxDecoration(color:AppColors.primary,shape:BoxShape.circle),child:const Text('3',style:TextStyle(color:Colors.white,fontSize:9,fontWeight:FontWeight.bold))))
+    if(notificacoesDeExemplo>0)Positioned(right:-2,top:-2,child:Container(width:14,height:14,alignment:Alignment.center,decoration:const BoxDecoration(color:AppColors.primary,shape:BoxShape.circle),child:Text('$notificacoesDeExemplo',style:TextStyle(color:Colors.white,fontSize:9,fontWeight:FontWeight.bold))))
   ]);
 }
-class _SearchBar extends StatelessWidget{
+// Busca por lugares ainda não existe: avisa uma vez ao tocar, sem travar a digitação.
+class _SearchBar extends StatefulWidget{
   const _SearchBar();
-  @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.symmetric(horizontal:16),decoration:BoxDecoration(border:Border.all(color:AppColors.primary),borderRadius:BorderRadius.circular(20)),child:TextField(style:AppTextStyles.body,decoration:InputDecoration(isDense:true,contentPadding:const EdgeInsets.symmetric(vertical:10),border:InputBorder.none,hintText:'Procure um lugar...',hintStyle:AppTextStyles.hint,suffixIcon:const Icon(Icons.search,color:AppColors.primary,size:20))));
+  @override State<_SearchBar> createState()=>_SearchBarState();
+}
+class _SearchBarState extends State<_SearchBar>{
+  bool _avisou=false;
+  void _avisar(){
+    if(_avisou)return;
+    _avisou=true;
+    mostrarEmBreve(context,'Busca por lugares chega no CP06.');
+  }
+  @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.symmetric(horizontal:16),decoration:BoxDecoration(border:Border.all(color:AppColors.primary),borderRadius:BorderRadius.circular(20)),child:TextField(onTap:_avisar,style:AppTextStyles.body,decoration:InputDecoration(isDense:true,contentPadding:const EdgeInsets.symmetric(vertical:10),border:InputBorder.none,hintText:'Procure um lugar...',hintStyle:AppTextStyles.hint,suffixIcon:const Icon(Icons.search,color:AppColors.primary,size:20))));
 }
 class _MapWithBlobs extends StatelessWidget{
   const _MapWithBlobs();
@@ -58,7 +69,7 @@ class _MapWithBlobs extends StatelessWidget{
     Image.asset('assets/images/map_placeholder.png',fit:BoxFit.cover),
     Positioned(top:-20,left:-10,child:_blob(140,AppColors.mapHeatPink)),
     Positioned(bottom:-30,left:70,child:_blob(160,AppColors.mapHeatYellow)),
-    Positioned(right:12,bottom:12,child:HoverScale(child:Container(width:32,height:32,decoration:const BoxDecoration(color:AppColors.primary,shape:BoxShape.circle),child:const Icon(Icons.my_location,color:Colors.white,size:16))))
+    Positioned(right:12,bottom:12,child:HoverScale(child:GestureDetector(onTap:()=>mostrarEmBreve(context,'Localização chega no CP06.'),child:Container(width:32,height:32,decoration:const BoxDecoration(color:AppColors.primary,shape:BoxShape.circle),child:const Icon(Icons.my_location,color:Colors.white,size:16)))))
   ])));
   static Widget _blob(double size,Color color)=>ImageFiltered(imageFilter:ImageFilter.blur(sigmaX:22,sigmaY:22),child:Container(width:size,height:size,decoration:BoxDecoration(color:color.withValues(alpha:.55),shape:BoxShape.circle)));
 }
