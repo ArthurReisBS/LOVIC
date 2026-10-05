@@ -11,6 +11,7 @@ import '../../widgets/shared/app_background.dart';
 import '../../widgets/shared/hover_scale.dart';
 import '../../widgets/shared/lovic_logo.dart';
 import '../auth/login_screen.dart';
+import 'edit_profile_screen.dart';
 
 /// Tela de Configurações — lista de opções. Perfil e Sair funcionam;
 /// Notificações e Privacidade avisam "Em breve".
@@ -33,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
               _SettingsRow(
                 icon: Icons.person_outline,
                 label: 'Perfil',
-                onTap: () => mostrarEmBreve(context),
+                onTap: () => openEditProfile(context),
               ),
               _SettingsRow(
                 icon: Icons.notifications_none,

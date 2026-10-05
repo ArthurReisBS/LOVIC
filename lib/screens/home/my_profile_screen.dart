@@ -10,6 +10,7 @@ import '../../widgets/home/app_bottom_nav.dart';
 import '../../widgets/home/genre_chip.dart';
 import '../../widgets/shared/app_background.dart';
 import '../../widgets/shared/lovic_logo.dart';
+import 'edit_profile_screen.dart';
 
 /// Tela "Meu Perfil" — o perfil do próprio usuário logado. Nome, username e
 /// bio vêm do Supabase; os gêneros seguem mockados até a integração com o
@@ -27,9 +28,19 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _loadProfile();
+  }
+
+  /// Se o perfil não existir ou der erro, segue com o placeholder "Você".
+  void _loadProfile() {
     AuthService.fetchMyProfile().then((profile) {
       if (mounted) setState(() => _profile = profile);
     }, onError: (_) {});
+  }
+
+  Future<void> _editProfile() async {
+    final saved = await openEditProfile(context);
+    if (saved && mounted) _loadProfile();
   }
 
   static const List<ProfileGenre> _myGenres = [
@@ -90,7 +101,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       .toList(),
                 ),
                 const SizedBox(height: 32),
-                GradientButton(label: 'Editar perfil'),
+                GradientButton(label: 'Editar perfil', onPressed: _editProfile),
               ],
             ),
           ),

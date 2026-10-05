@@ -37,6 +37,12 @@ class MyProfile {
   );
 }
 
+/// Texto sem espaços nas pontas, ou null se ficar vazio.
+String? nullIfEmpty(String? value) {
+  final text = value?.trim();
+  return (text == null || text.isEmpty) ? null : text;
+}
+
 /// Cadastro, login e perfil no Supabase (Backend A do CP05).
 ///
 /// Sem `.env` ([SupabaseConfig.isConfigured] falso) nada aqui é chamado: as
@@ -101,6 +107,29 @@ class AuthService {
           .maybeSingle(),
     );
     return row == null ? null : MyProfile.fromRow(row);
+  }
+
+  /// Atualiza nome, sobrenome e bio de quem está logado. O username não muda
+  /// (é único e funciona como identificador). Campos vazios viram null.
+  static Future<void> updateMyProfile({
+    required String nome,
+    String? sobrenome,
+    String? bio,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      throw const AuthFailure('Sessão expirada. Entre de novo.');
+    }
+    await _guard(
+      () => _client
+          .from('profiles')
+          .update({
+            'nome': nome.trim(),
+            'sobrenome': nullIfEmpty(sobrenome),
+            'bio': nullIfEmpty(bio),
+          })
+          .eq('id', user.id),
+    );
   }
 
   static Future<T> _guard<T>(Future<T> Function() call) async {
