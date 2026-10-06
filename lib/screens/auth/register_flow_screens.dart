@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/config/supabase_config.dart';
+import '../../widgets/shared/app_back_button.dart';
 import '../../core/navigation/no_transition_route.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -147,9 +148,9 @@ class _RegisterScaffold extends StatelessWidget{
   final Widget child;final bool compact;
   const _RegisterScaffold({required this.child,this.compact=false});
   @override Widget build(BuildContext context)=>Scaffold(
-    body:GradientBlobBackground(blobScale: compact ? .58 : 1,child:SafeArea(child:SingleChildScrollView(
+    body:GradientBlobBackground(blobScale: compact ? .58 : 1,child:SafeArea(child:Stack(children:[SingleChildScrollView(
       padding:const EdgeInsets.fromLTRB(28,24,28,32),
       child:ConstrainedBox(constraints:BoxConstraints(minHeight:0),child:Align(alignment:Alignment.topCenter,child:child)),
-    ))),
+    ),const Positioned(top:0,left:8,child:AppBackButton())]))),
   );
 }

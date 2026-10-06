@@ -8,6 +8,7 @@ import '../../models/user_profile.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/home/app_bottom_nav.dart';
 import '../../widgets/home/profile_card.dart';
+import '../../widgets/shared/app_back_button.dart';
 import '../../widgets/shared/app_background.dart';
 import '../../widgets/shared/lovic_logo.dart';
 import 'chat_talk_screen.dart';
@@ -113,7 +114,16 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
           child: Column(
             children: [
               const SizedBox(height: 4),
-              const LovicLogo(fontSize: 22),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  const LovicLogo(fontSize: 22),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: AppBackButton(),
+                  ),
+                ],
+              ),
               const SizedBox(height: 4),
               if (_genreFilter != null) _filterBar(),
               Expanded(child: _buildBody()),

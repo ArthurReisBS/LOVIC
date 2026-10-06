@@ -9,6 +9,7 @@ import '../../models/register_draft.dart';
 import '../../widgets/auth/auth_text_field.dart';
 import '../../widgets/auth/gradient_blob_background.dart';
 import '../../widgets/auth/social_login_button.dart';
+import '../../widgets/shared/app_back_button.dart';
 import '../../widgets/shared/hover_scale.dart';
 import '../../widgets/shared/lovic_logo.dart';
 import 'register_flow_screens.dart';
@@ -21,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
   final _email=TextEditingController();
   @override void dispose(){_email.dispose();super.dispose();}
   @override Widget build(BuildContext context)=>Scaffold(
-    body:GradientBlobBackground(child:SafeArea(child:SingleChildScrollView(
+    body:GradientBlobBackground(child:SafeArea(child:Stack(children:[SingleChildScrollView(
       padding:const EdgeInsets.symmetric(horizontal:28,vertical:24),
       child:ConstrainedBox(constraints:BoxConstraints(minHeight:MediaQuery.sizeOf(context).height-48),child:Column(mainAxisAlignment:MainAxisAlignment.spaceEvenly,children:[
         const LovicLogo(fontSize:64),Text('Novo aqui?',style:AppTextStyles.heading),
@@ -34,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
         HoverScale(child:GestureDetector(onTap:()=>Navigator.pop(context),child:Text('Já tem uma conta?',style:AppTextStyles.linkOrange))),
         TextButton(onPressed:_continue,child:Text('Continuar com email',style:AppTextStyles.linkOrange))
       ]))
-    )))
+    ),const Positioned(top:0,left:8,child:AppBackButton())])))
   );
   // Cadastro direto, sem a tela de código (RegisterOtpScreen fica para o
   // CP06): o plano gratuito do Supabase manda poucos emails por hora.
