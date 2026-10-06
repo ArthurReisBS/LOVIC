@@ -73,10 +73,6 @@ O grupo decidiu entregar **apenas o CP5** e deixar o CP6 para depois, porque nã
 
 ## Telas
 
-| Feed | Home | Perfil |
-|----------|----------|----------|
-| ![feed](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/Feed.png) | ![home](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaHome.png) | ![perfil](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaPerfil.png) |
-
 Prints do app rodando:
 
 | Feed | Meu perfil | Chats |
