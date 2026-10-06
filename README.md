@@ -26,6 +26,9 @@ Dois pilares sustentam a proposta:
 
 ### O que cada um fez e as decisões tomadas
 
+#### Decisão do grupo: focar só no CP5
+O grupo decidiu entregar **apenas o CP5** e deixar o CP6 para depois, porque não havia tempo de fazer os dois com qualidade. Nada do que foi construído para o CP6 foi descartado: a camada de Spotify, afinidade, descoberta, curtir/match e localização do Léo está no repositório, testada, e as telas foram feitas para trocar os dados de exemplo por dados reais sem serem refeitas.
+
 #### Júlia — Product Owner e frontend
 - Priorizou o escopo do CP5 e acompanhou as dependências entre o time.
 - Telas: edição de perfil completa (foto do avatar, nome, bio, **gêneros musicais**, gênero, sexualidade, altura e galeria de até 6 fotos), visualizador de fotos em tela cheia, filtro do feed por gênero musical, "Esqueceu a senha" com código por email, olhinho de mostrar/esconder senha, campos de texto legíveis sobre o gradiente e setas de voltar.
@@ -34,21 +37,30 @@ Dois pilares sustentam a proposta:
 - Decisão: sem `.env` o app abre em **modo demonstração**; com banco configurado o feed nunca cai silenciosamente nos perfis de exemplo.
 
 #### Arthur — Banco de dados e integração
-<!-- Preencher: o que fez e decisões (ex.: Supabase em vez de Firebase, trigger de criação de perfil, RLS, cadastro direto sem confirmação de email). -->
 - Criou o projeto Supabase e o [`supabase/schema.sql`](supabase/schema.sql): tabelas `profiles` e `mensagens`, bucket de fotos e regras de acesso (RLS).
-- Ligou cadastro, login e perfil ao banco ([`lib/services/auth_service.dart`](lib/services/auth_service.dart)).
+- Ligou cadastro, login e perfil ao banco ([`lib/services/auth_service.dart`](lib/services/auth_service.dart)) e implementou o chat com mensagens em tempo real.
+- Decisão: **Supabase em vez de Firebase**, porque o PostgreSQL com RLS deixa as regras de acesso no próprio banco.
+- Decisão: o perfil é criado por um **trigger** (`handle_new_user`) junto com a conta, sem permitir insert direto pelo app, e o username é validado antes do cadastro (`username_disponivel`).
+- Decisão: **cadastro direto, sem email de confirmação**, porque o plano gratuito manda poucos emails por hora e travaria a demonstração.
+<!-- confirmar com o Arthur: SQL do chat e das fotos, e se há outra decisão que ele queira registrar -->
 
 #### Isabelle — Fluxo de telas
-<!-- Preencher: o que fez e decisões (navegação, estados de carregando/vazio/erro, Meu Perfil). -->
-- Navegação completa entre as telas e ligação das telas aos dados.
+- Implementou o fluxo de telas do CP5: login, cadastro em etapas, Home, feed de perfis, perfil, conversas, chat, notificações e configurações, com a navegação entre elas.
+- Decisão: seguir o design do Figma da equipe e reaproveitar componentes (botão com gradiente, campos de texto, chips de gênero, barra de navegação).
+<!-- confirmar com a Isabelle: estados de carregando/vazio/erro e decisões de navegação que ela queira registrar -->
 
 #### Léo — Dados de exemplo e Backend B
-<!-- Preencher: o que fez e decisões. -->
-- Camada de domínio e dados em [`lib/features/`](lib/features/): Spotify (PKCE e cache), afinidade musical, descoberta, curtir/match e localização, todos com testes. A fórmula de afinidade está em [`lib/features/affinity/README.md`](lib/features/affinity/README.md); o contrato em [`docs/backend-b-leo-contract.md`](docs/backend-b-leo-contract.md) e os testes em [`docs/testing-backend-b.md`](docs/testing-backend-b.md).
+- Criou a camada de domínio e dados em [`lib/features/`](lib/features/): Spotify, afinidade, descoberta, curtir/match e localização, todos com testes.
+- Decisão: **afinidade = 50% artistas + 30% gêneros + 20% músicas**, comparando por Jaccard (itens em comum ÷ itens distintos). Sem dados, o componente vale zero.
+- Decisão: **ranking da descoberta = 80% afinidade + 20% proximidade**, com raio padrão de 30 km.
+- Decisão: **Spotify com Authorization Code + PKCE**, só o escopo `user-top-read`, 50 itens de médio prazo, e tokens guardados em armazenamento seguro, nunca no banco nem no código.
+- Decisão: a **localização** só é enviada com permissão confirmada, no máximo a cada 15 minutos, e as coordenadas de outras pessoas nunca chegam ao app (a distância vem pronta do banco).
+- Decisão: o código de domínio fica isolado de Supabase por interfaces, para o Arthur ligar o banco sem reescrever as regras.
+- Detalhes: [`lib/features/*/README.md`](lib/features/), [`docs/backend-b-leo-contract.md`](docs/backend-b-leo-contract.md) e [`docs/testing-backend-b.md`](docs/testing-backend-b.md).
 
 #### Carol e Manoella — Marca e design
-<!-- Preencher: o que fizeram e decisões. -->
-- Identidade visual: paleta, tipografia, logo e tabela de cores dos gêneros (ver [`design/`](design/) e [`docs/marca.md`](docs/marca.md)). Pitch e modelo de negócio em [`docs/pitch.md`](docs/pitch.md).
+- Definiram a identidade visual: paleta, tipografia, logo e tabela de cores dos gêneros ([`design/`](design/) e [`docs/marca.md`](docs/marca.md)). Pitch e modelo de negócio em [`docs/pitch.md`](docs/pitch.md).
+<!-- confirmar com a Carol e a Manoella: decisões de marca (nome, tom de voz, cores) que queiram destacar -->
 
 ---
 
@@ -167,15 +179,25 @@ Plano B se a internet falhar: abrir o app **sem o `.env`** (modo demonstração)
 
 ---
 
-## Decisões técnicas (desde o CP4)
+## Decisões técnicas
 
-- **Supabase em vez de Firebase:** PostgreSQL com RLS deixa as regras de acesso no próprio banco (cada um só edita o próprio perfil e só lê as próprias conversas; fotos só na pasta do dono).
-- **Perfil criado por trigger:** `handle_new_user` cria a linha em `profiles` junto com a conta, sem permitir insert direto pelo cliente.
-- **Cadastro direto, sem email de confirmação:** o plano gratuito do Supabase manda poucos emails por hora, o que travaria a demonstração.
-- **Modo demonstração sem banco:** garante que o app abra e navegue mesmo sem `.env` ou internet.
-- **Sem fallback silencioso:** com banco configurado, falhas mostram erro e lista vazia, nunca perfis inventados.
-- **Backend B isolado em `lib/features/`:** camadas `domain` e `data` com testes, para ligar às telas no CP6 sem reescrevê-las.
-- **Botões sem função mostram "Em breve!"** em vez de ficarem sem resposta.
+| Tema | Decisão | Por quê |
+| ---- | ------- | ------- |
+| Escopo | Entregar só o CP5 | Sem tempo de fazer CP5 e CP6 com qualidade; o CP6 aproveita tudo |
+| Backend | Supabase (Auth, Postgres, RLS, Realtime, Storage) | Regras de acesso no próprio banco e sem servidor próprio para manter |
+| Sem servidor REST | O app fala direto com o Supabase | Menos peças para o prazo; a RLS protege os dados |
+| Perfil | Criado por trigger na criação da conta | O app não consegue inserir perfil de outra pessoa |
+| Cadastro | Direto, sem email de confirmação | Limite de emails do plano gratuito |
+| Senha | Redefinição por **código de 6 dígitos** no email | O app roda no desktop, onde não dá para abrir um link de volta no app |
+| Fotos | Bucket `fotos` público; cada pessoa escreve só na própria pasta; até 6 fotos | Simples para o protótipo; leitura aberta para o feed funcionar |
+| Chat | Tabela `mensagens` com Realtime; só quem está na conversa lê; cada um envia em nome próprio | Mensagem aparece na hora do outro lado |
+| Modo demonstração | Sem `.env` o app abre com perfis de exemplo | Plano B se a internet falhar |
+| Sem fallback silencioso | Com banco configurado, falha mostra erro e lista vazia, nunca perfis inventados | A demonstração não engana ninguém |
+| Botões sem função | Mostram "Em breve!" | Nenhum botão fica sem resposta |
+| Gêneros | Escolhidos em Editar perfil; quem não escolheu recebe gêneros de exemplo fixos | O Spotify só entra no CP6 |
+| Afinidade | Calculada no app (50/30/20) | Regra pura e testável; a validação no servidor fica para o CP6 |
+| Distância | Calculada no banco, nunca no app | Não expor coordenadas de outras pessoas |
+| Arquitetura | Telas → providers → repositórios (interfaces) → fontes de dados | Trocar dados de exemplo por reais sem refazer telas |
 
 ---
 
@@ -222,9 +244,32 @@ Plano B se a internet falhar: abrir o app **sem o `.env`** (modo demonstração)
 
 ## Próximos passos (CP6)
 
-A arquitetura do CP5 é a base do CP6: os dados de exemplo são trocados por dados reais sem refazer as telas.
+A arquitetura do CP5 é a base do CP6: o que está em `lib/features/` já tem regras e testes; falta ligar ao banco e às telas.
 
-- Spotify real e afinidade com as músicas de verdade
-- Localização por GPS e distância real
-- Match automático por afinidade
-- Notificações reais
+### O que fica para o CP6
+
+| # | Item | Situação no CP5 | O que falta | Quem |
+| - | ---- | --------------- | ----------- | ---- |
+| 1 | **Spotify real** | Código pronto e testado (login PKCE, top artistas e músicas, cache) | Registrar o app no Spotify Dashboard (client ID e redirect URI HTTPS), configurar o link de retorno no app, guardar o perfil musical no banco e ligar os botões "Login/Criar com Spotify" | Arthur, Léo, Isabelle |
+| 2 | **Afinidade real** | Cálculo pronto; telas mostram gêneros escolhidos ou de exemplo | Depende do item 1 para ter artistas e músicas de duas pessoas; mostrar o score no feed e no perfil | Léo, Isabelle |
+| 3 | **Descoberta por distância e ranking** | Feed lista as pessoas cadastradas, sem ordenar por afinidade ou distância | Fonte de dados no banco que devolve candidatos com distância pronta; ligar o ranking 80/20 e o raio | Arthur, Isabelle |
+| 4 | **Localização por GPS** | Código pronto; mapa é uma imagem e o botão avisa "Em breve" | Onde guardar a posição (tabela ou colunas com RLS), permissões no Android/iOS, pedir permissão na tela, mapa real | Arthur, Isabelle |
+| 5 | **Curtir e match** | Regras prontas; não há botão de curtir nas telas e não há tabela de curtidas | Tabela de curtidas e função no banco que cria o match e a conversa de uma vez; botão nas telas; definir o limiar de "afinidade alta" | Arthur, Isabelle, Júlia (produto) |
+| 6 | **Chat ligado ao match** | Qualquer pessoa pode mandar mensagem para qualquer perfil | Decidir se só quem deu match conversa e ligar a conversa ao match | Júlia (produto), Arthur |
+| 7 | **Notificações reais** | Um item de exemplo e contador | Tabela de notificações (curtida, match, mensagem) e leitura em tempo real | Arthur, Isabelle |
+| 8 | **Login com Google** | Botão avisa "Em breve" | Configurar o provedor no Supabase e no Google | Arthur |
+| 9 | **Email de confirmação** | Desligado no protótipo | Ligar a confirmação com um serviço de email próprio (SMTP), que também melhora o "Esqueceu a senha" | Arthur |
+| 10 | **Busca por lugares, câmera e menus** | Avisam "Em breve" | Definir se entram no escopo | Júlia (produto) |
+
+### Segurança e privacidade a revisar
+- **Score de afinidade calculado no app** pode ser adulterado: validar ou recalcular no servidor antes de usar para dar match.
+- **Fotos em bucket público:** qualquer pessoa com o link vê a foto. Avaliar links temporários.
+- **Todos os perfis são legíveis por qualquer pessoa logada.** Quando houver distância e match, restringir o que cada pessoa vê.
+- **Spotify:** o segredo do cliente nunca entra no app, e os tokens ficam só no armazenamento seguro do aparelho.
+
+### Decisões em aberto
+1. Qual é o limiar de "afinidade alta" que gera match automático?
+2. Qual é o raio padrão da descoberta (o código usa 30 km como fallback)?
+3. Chat liberado para todos ou só para quem deu match?
+4. Quais códigos de motivo o match devolve (`mutual_like`, `high_affinity`, `no_match`)? Confirmar entre Arthur e Isabelle antes de ligar as telas.
+5. Qual domínio e link de retorno serão registrados no Spotify?
