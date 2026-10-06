@@ -111,3 +111,53 @@ create policy "usuario apaga as proprias fotos"
   using (
     bucket_id = 'fotos' and (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- ---------------------------------------------------------------------------
+-- Chat: mensagens entre duas pessoas.
+-- ---------------------------------------------------------------------------
+create table if not exists public.mensagens (
+  id              bigint generated always as identity primary key,
+  remetente_id    uuid not null references public.profiles (id) on delete cascade,
+  destinatario_id uuid not null references public.profiles (id) on delete cascade,
+  texto           text not null check (length(trim(texto)) between 1 and 2000),
+  criado_em       timestamptz not null default now(),
+  -- Mesma chave para os dois lados da conversa ("menor:maior"), usada no
+  -- filtro do app e do tempo real.
+  conversa        text generated always as (
+    least(remetente_id::text, destinatario_id::text) || ':' ||
+    greatest(remetente_id::text, destinatario_id::text)
+  ) stored,
+  check (remetente_id <> destinatario_id)
+);
+
+create index if not exists mensagens_conversa_idx
+  on public.mensagens (conversa, criado_em);
+
+alter table public.mensagens enable row level security;
+
+-- Só quem está na conversa lê as mensagens dela.
+drop policy if exists "participantes leem a conversa" on public.mensagens;
+create policy "participantes leem a conversa"
+  on public.mensagens for select
+  to authenticated
+  using (auth.uid() in (remetente_id, destinatario_id));
+
+-- Cada um só envia mensagem em nome próprio.
+drop policy if exists "usuario envia as proprias mensagens" on public.mensagens;
+create policy "usuario envia as proprias mensagens"
+  on public.mensagens for insert
+  to authenticated
+  with check (auth.uid() = remetente_id);
+
+-- Tempo real: a mensagem nova aparece na tela de quem está do outro lado.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public' and tablename = 'mensagens'
+  ) then
+    alter publication supabase_realtime add table public.mensagens;
+  end if;
+end;
+$$;
