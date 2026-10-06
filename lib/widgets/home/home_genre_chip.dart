@@ -15,7 +15,15 @@ class HomeGenreChip extends StatelessWidget {
   final String label;
   final GenreVariant variant;
 
-  const HomeGenreChip({super.key, required this.label, required this.variant});
+  /// Quando informado, o chip vira clicável.
+  final VoidCallback? onTap;
+
+  const HomeGenreChip({
+    super.key,
+    required this.label,
+    required this.variant,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +32,7 @@ class HomeGenreChip extends StatelessWidget {
         (colors.first.computeLuminance() + colors.last.computeLuminance()) / 2;
     final textColor = avgLuminance > 0.55 ? Colors.black87 : Colors.white;
 
-    return Container(
+    final chip = Container(
       height: 30,
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -33,6 +41,11 @@ class HomeGenreChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(label, style: AppTextStyles.bodyBold.copyWith(fontSize: 10, color: textColor)),
+    );
+    if (onTap == null) return chip;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(onTap: onTap, child: chip),
     );
   }
 }

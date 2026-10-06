@@ -9,6 +9,7 @@ import '../../widgets/home/app_bottom_nav.dart';
 import '../../widgets/home/genre_chip.dart';
 import '../../widgets/shared/app_background.dart';
 import '../../widgets/shared/lovic_logo.dart';
+import '../../widgets/shared/photo_viewer.dart';
 import 'edit_profile_screen.dart';
 
 /// Tela "Meu Perfil" — o perfil do próprio usuário logado. Nome, username e
@@ -52,7 +53,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               children: [
                 const LovicLogo(fontSize: 34),
                 const SizedBox(height: 28),
-                CircleAvatar(
+                GestureDetector(
+                  onTap: _profile?.fotoUrl == null
+                      ? null
+                      : () => showPhotoViewer(context, _allImages),
+                  child: CircleAvatar(
                   radius: 54,
                   backgroundColor: AppColors.blobYellow,
                   backgroundImage: _profile?.fotoUrl != null
@@ -67,6 +72,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           ),
                         )
                       : null,
+                ),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -127,14 +133,22 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      for (final url in _profile!.fotos)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.network(
-                            url,
-                            width: 96,
-                            height: 96,
-                            fit: BoxFit.cover,
+                      for (var i = 0; i < _profile!.fotos.length; i++)
+                        GestureDetector(
+                          onTap: () => showPhotoViewer(
+                            context,
+                            _allImages,
+                            initialIndex:
+                                _allImages.length - _profile!.fotos.length + i,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: Image.network(
+                              _profile!.fotos[i],
+                              width: 96,
+                              height: 96,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                     ],
@@ -153,6 +167,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       ),
     );
   }
+
+  /// Foto de perfil (se houver) e depois a galeria, para o visualizador.
+  List<ImageProvider> get _allImages => [
+    if (_profile?.fotoUrl != null) NetworkImage(_profile!.fotoUrl!),
+    ...?_profile?.fotos.map(NetworkImage.new),
+  ];
 
   List<(String, String)> get _infos => [
     if (_profile?.genero != null) ('Gênero', _profile!.genero!),

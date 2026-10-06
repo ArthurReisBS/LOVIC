@@ -5,6 +5,7 @@ import '../../core/ui/em_breve.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/home/genre_chip.dart';
 import '../../widgets/shared/app_background.dart';
+import '../../widgets/shared/photo_viewer.dart';
 
 class ProfileDetailScreen extends StatelessWidget{
   final UserProfile profile;
@@ -17,11 +18,16 @@ class ProfileDetailScreen extends StatelessWidget{
     }
     return [if(profile.gender!=null)_Info('Gênero',profile.gender!),if(profile.sexuality!=null)_Info('Sexualidade',profile.sexuality!),if(profile.age!=null)_Info('Idade','${profile.age}'),if(profile.heightCm!=null)_Info('Altura','${(profile.heightCm!/100).toStringAsFixed(2).replaceAll('.',',')} m')];
   }
+  // Foto principal primeiro, depois a galeria: é a ordem do visualizador.
+  List<ImageProvider> get _images=>[
+    if(profile.photoAsset!=null)AssetImage(profile.photoAsset!) else if(profile.photoUrl!=null)NetworkImage(profile.photoUrl!),
+    ...profile.photos.map(NetworkImage.new),
+  ];
   @override Widget build(BuildContext context)=>Scaffold(
     body:AppBackground(child:SafeArea(child:CustomScrollView(slivers:[
       SliverAppBar(backgroundColor:Colors.transparent,leading:IconButton(onPressed:()=>Navigator.pop(context),icon:const Icon(Icons.chevron_left)),actions:[IconButton(onPressed:()=>mostrarEmBreve(context),icon:const Icon(Icons.more_vert))]),
       SliverToBoxAdapter(child:Padding(padding:const EdgeInsets.fromLTRB(24,8,24,32),child:Column(children:[
-        ClipRRect(borderRadius:BorderRadius.circular(28),child:SizedBox(width:280,height:280,child:profile.photoAsset!=null?Image.asset(profile.photoAsset!,fit:BoxFit.cover):profile.photoUrl!=null?Image.network(profile.photoUrl!,fit:BoxFit.cover):Container(color:profile.photoColor,child:Center(child:Text(profile.name.substring(0,1),style:const TextStyle(fontSize:72)))))),
+        GestureDetector(onTap:()=>showPhotoViewer(context,_images),child:MouseRegion(cursor:(profile.photoAsset!=null||profile.photoUrl!=null)?SystemMouseCursors.click:MouseCursor.defer,child:ClipRRect(borderRadius:BorderRadius.circular(28),child:SizedBox(width:280,height:280,child:profile.photoAsset!=null?Image.asset(profile.photoAsset!,fit:BoxFit.cover):profile.photoUrl!=null?Image.network(profile.photoUrl!,fit:BoxFit.cover):Container(color:profile.photoColor,child:Center(child:Text(profile.name.substring(0,1),style:const TextStyle(fontSize:72)))))))),
         const SizedBox(height:20),Text(profile.name,style:AppTextStyles.screenTitle.copyWith(fontSize:32)),
         Text('@${profile.username??profile.name.toLowerCase().replaceAll(' ', '.')}',style:AppTextStyles.hint),const SizedBox(height:24),
         Wrap(alignment:WrapAlignment.center,spacing:8,runSpacing:8,children:profile.genres.map((g)=>GenreChip(label:g.name,variant:g.variant)).toList()),
@@ -33,7 +39,7 @@ class ProfileDetailScreen extends StatelessWidget{
         ],
         if(profile.photos.isNotEmpty)...[
           const SizedBox(height:28),Align(alignment:Alignment.centerLeft,child:Text('Fotos',style:AppTextStyles.heading)),const SizedBox(height:16),
-          Wrap(spacing:10,runSpacing:10,children:[for(final u in profile.photos)ClipRRect(borderRadius:BorderRadius.circular(14),child:Image.network(u,width:96,height:96,fit:BoxFit.cover))])
+          Wrap(spacing:10,runSpacing:10,children:[for(var i=0;i<profile.photos.length;i++)GestureDetector(onTap:()=>showPhotoViewer(context,_images,initialIndex:_images.length-profile.photos.length+i),child:MouseRegion(cursor:SystemMouseCursors.click,child:ClipRRect(borderRadius:BorderRadius.circular(14),child:Image.network(profile.photos[i],width:96,height:96,fit:BoxFit.cover))))])
         ]
       ])))
     ])))

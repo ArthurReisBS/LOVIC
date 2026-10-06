@@ -4,9 +4,8 @@ import '../../core/navigation/app_tabs.dart';
 import '../../core/navigation/no_transition_route.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/theme/genre_colors.dart';
+import '../../core/theme/music_genres.dart';
 import '../../core/ui/em_breve.dart';
-import '../../models/user_profile.dart';
 import '../../widgets/auth/gradient_button.dart';
 import '../../widgets/home/app_bottom_nav.dart';
 import '../../widgets/home/home_genre_chip.dart';
@@ -18,10 +17,6 @@ import 'profile_card_screen.dart';
 
 class HomeScreen extends StatelessWidget{
   const HomeScreen({super.key});
-  static const List<ProfileGenre> _genres=[
-    ProfileGenre('Sertanejo',GenreVariant.v1),ProfileGenre('Funk',GenreVariant.v2),
-    ProfileGenre('MPB',GenreVariant.v3),ProfileGenre('Pop',GenreVariant.v4),ProfileGenre('Rock',GenreVariant.v5)
-  ];
   @override Widget build(BuildContext context)=>Scaffold(
     body:AppBackground(child:SafeArea(child:SingleChildScrollView(
       padding:const EdgeInsets.fromLTRB(24,24,24,16),
@@ -34,8 +29,8 @@ class HomeScreen extends StatelessWidget{
         const SizedBox(height:10),Text('Localização atual',style:AppTextStyles.hint),const SizedBox(height:32),
         GradientButton(label:'Encontre um par',height:50,onPressed:()=>Navigator.of(context).push(noTransitionRoute(const ProfileCardScreen()))),
         const SizedBox(height:40),Text('Explore gêneros musicais',style:AppTextStyles.bodyBold),const SizedBox(height:18),
-        SizedBox(height:30,child:ListView.separated(scrollDirection:Axis.horizontal,itemCount:_genres.length,separatorBuilder:(_,_)=>const SizedBox(width:8),itemBuilder:(context,i){
-          final g=_genres[i];return HomeGenreChip(label:g.name,variant:g.variant);
+        SizedBox(height:30,child:ListView.separated(scrollDirection:Axis.horizontal,itemCount:availableGenres.length,separatorBuilder:(_,_)=>const SizedBox(width:8),itemBuilder:(context,i){
+          final g=genreFromName(availableGenres[i]);return HomeGenreChip(label:g.name,variant:g.variant,onTap:()=>Navigator.of(context).push(noTransitionRoute(ProfileCardScreen(genreFilter:g.name))));
         })),
       ])
     ))),
