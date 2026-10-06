@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +28,7 @@ class LovicApp extends StatelessWidget {
     return MaterialApp(
       title: 'LOVIC',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _LovicScrollBehavior(),
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
@@ -43,4 +45,16 @@ class LovicApp extends StatelessWidget {
       home: AuthService.isLoggedIn ? const HomeScreen() : const LoginScreen(),
     );
   }
+}
+
+/// Deixa arrastar o feed e as listas com o mouse (Chrome/desktop), além do
+/// toque. O padrão do Flutter não aceita arrastar com o mouse.
+class _LovicScrollBehavior extends MaterialScrollBehavior {
+  const _LovicScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    ...super.dragDevices,
+    PointerDeviceKind.mouse,
+  };
 }
