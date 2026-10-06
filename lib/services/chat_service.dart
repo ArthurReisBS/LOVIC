@@ -64,7 +64,9 @@ class ChatService {
           .from('mensagens')
           .select('id, remetente_id, texto, criado_em')
           .eq('conversa', conversationKey(myId, otherUserId))
-          .order('criado_em'),
+          // No supabase_flutter o padrão do order é decrescente.
+          .order('criado_em', ascending: true)
+          .order('id', ascending: true),
     );
     return rows.map((row) => ChatMessage.fromRow(row, myId)).toList();
   }

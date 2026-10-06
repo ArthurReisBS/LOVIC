@@ -16,6 +16,7 @@ class ChatTalkScreen extends StatefulWidget{
 }
 class _ChatTalkScreenState extends State<ChatTalkScreen>{
   final _controller=TextEditingController();
+  final _scroll=ScrollController();
   final List<ChatMessage> _messages=[];
   late final bool _persist=ChatService.canPersist(widget.profile.id);
   RealtimeChannel? _channel;
@@ -31,7 +32,17 @@ class _ChatTalkScreenState extends State<ChatTalkScreen>{
   @override void dispose(){
     final channel=_channel;
     if(channel!=null)ChatService.stopListening(channel);
-    _controller.dispose();super.dispose();
+    _controller.dispose();_scroll.dispose();super.dispose();
+  }
+
+  // A lista começa no topo (mais antiga em cima); quando passa da tela,
+  // desce até a mais nova, que fica perto do campo de escrita.
+  void _scrollToEnd({bool animate=true}){
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      if(!_scroll.hasClients)return;
+      final end=_scroll.position.maxScrollExtent;
+      if(animate){_scroll.animateTo(end,duration:const Duration(milliseconds:250),curve:Curves.easeOut);}else{_scroll.jumpTo(end);}
+    });
   }
 
   Future<void> _load()async{
@@ -40,6 +51,7 @@ class _ChatTalkScreenState extends State<ChatTalkScreen>{
       final messages=await ChatService.fetchMessages(widget.profile.id!);
       if(!mounted)return;
       setState((){_messages..clear()..addAll(messages);_loading=false;});
+      _scrollToEnd(animate:false);
     }catch(e){
       if(mounted)setState((){_error=e.toString();_loading=false;});
     }
@@ -49,11 +61,12 @@ class _ChatTalkScreenState extends State<ChatTalkScreen>{
   void _add(ChatMessage message){
     if(!mounted||_messages.any((m)=>m.id!=null&&m.id==message.id))return;
     setState(()=>_messages.add(message));
+    _scrollToEnd();
   }
 
   Future<void> _send()async{
     final text=_controller.text.trim();if(text.isEmpty||_sending)return;
-    if(!_persist){setState((){_messages.add(ChatMessage(text:text,isMine:true,sentAt:DateTime.now()));_controller.clear();});return;}
+    if(!_persist){_controller.clear();_add(ChatMessage(text:text,isMine:true,sentAt:DateTime.now()));return;}
     setState(()=>_sending=true);
     try{
       final message=await ChatService.sendMessage(widget.profile.id!,text);
@@ -69,8 +82,8 @@ class _ChatTalkScreenState extends State<ChatTalkScreen>{
     if(_loading)return const Center(child:CircularProgressIndicator());
     if(_error!=null)return Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text(_error!,textAlign:TextAlign.center,style:AppTextStyles.hint),TextButton(onPressed:_load,child:const Text('Tentar de novo'))]));
     if(_messages.isEmpty)return Center(child:Text('Diga oi para ${widget.profile.name}!',style:AppTextStyles.hint));
-    return ListView.builder(reverse:true,padding:const EdgeInsets.fromLTRB(24,28,24,20),itemCount:_messages.length,itemBuilder:(context,index){
-      final message=_messages[_messages.length-1-index];
+    return ListView.builder(controller:_scroll,padding:const EdgeInsets.fromLTRB(24,28,24,20),itemCount:_messages.length,itemBuilder:(context,index){
+      final message=_messages[index];
       return Align(alignment:message.isMine?Alignment.centerRight:Alignment.centerLeft,child:Container(
         margin:const EdgeInsets.only(bottom:24),padding:const EdgeInsets.symmetric(horizontal:20,vertical:14),
         decoration:BoxDecoration(color:message.isMine?AppColors.specialGradientStart:AppColors.surfaceDark,borderRadius:BorderRadius.circular(22)),
