@@ -18,19 +18,23 @@ Dois pilares sustentam a proposta:
 | Integrante | RM | Papel no projeto |
 | ---------- | -- | ---------------- |
 | **Arthur** | `RM562181` | Banco de dados (Supabase): cadastro, login, perfil e chat reais; ambiente de teste |
-| **Isabelle** | `RM566464` | Fluxo de telas, navegação e estados de carregando/vazio/erro; ambiente de teste |
+| **Isabelle** | `RM566464` | **Frontend**: telas, fluxo, navegação, edição de perfil, fotos, filtro por gênero e redefinição de senha; ambiente de teste |
 | **Carol** | `RM564651` | Marca e design: paleta, fontes, logo e cores dos gêneros |
 | **Léo** | `RM563663` | Modelos e dados de exemplo; serviços de Spotify, afinidade, descoberta e localização (Backend B) |
 | **Manoella** | `RM564469` | Marca e design: paleta, fontes, logo e cores dos gêneros; pitch |
-| **Júlia** | `RM565010` | **Product Owner** e frontend: telas, edição de perfil, fotos, filtro por gênero, redefinição de senha; README e roteiro da demonstração |
+| **Júlia** | `RM565010` | **Product Owner**: priorização do escopo, apoio pontual à Isabelle no frontend; README e roteiro da demonstração |
 
 ### O que cada um fez e as decisões tomadas
 
 #### Decisão do grupo: focar só no CP5
 O grupo decidiu entregar **apenas o CP5** e deixar o CP6 para depois, porque não havia tempo de fazer os dois com qualidade. Nada do que foi construído para o CP6 foi descartado: a camada de Spotify, afinidade, descoberta, curtir/match e localização do Léo está no repositório, testada, e as telas foram feitas para trocar os dados de exemplo por dados reais sem serem refeitas.
 
-#### Júlia — Product Owner e frontend
+#### Júlia — Product Owner
 - Priorizou o escopo do CP5 e acompanhou as dependências entre o time.
+- Ajudou a Isabelle, em apoio pontual, em partes do frontend. O frontend é da Isabelle (ver abaixo).
+- Escreveu o README e o roteiro da demonstração.
+
+#### Isabelle — Frontend
 - Telas: edição de perfil completa (foto do avatar, nome, bio, **gêneros musicais**, gênero, sexualidade, altura e galeria de até 6 fotos), visualizador de fotos em tela cheia, filtro do feed por gênero musical, "Esqueceu a senha" com código por email, olhinho de mostrar/esconder senha, campos de texto legíveis sobre o gradiente e setas de voltar.
 - Decisão: botões que ainda não têm função mostram "Em breve!" em vez de ficarem mortos, e o contador do sino só conta o que existe.
 - Decisão: redefinição de senha por **código de 6 dígitos** no email (não por link), porque o app roda no desktop, onde não há como abrir um link de volta no app.
@@ -44,7 +48,6 @@ O grupo decidiu entregar **apenas o CP5** e deixar o CP6 para depois, porque nã
 - Decisão: **cadastro direto, sem email de confirmação**, porque o plano gratuito manda poucos emails por hora e travaria a demonstração.
 <!-- confirmar com o Arthur: SQL do chat e das fotos, e se há outra decisão que ele queira registrar -->
 
-#### Isabelle — Fluxo de telas
 - Implementou o fluxo de telas do CP5: login, cadastro em etapas, Home, feed de perfis, perfil, conversas, chat, notificações e configurações, com a navegação entre elas.
 - Decisão: seguir o design do Figma da equipe e reaproveitar componentes (botão com gradiente, campos de texto, chips de gênero, barra de navegação).
 <!-- confirmar com a Isabelle: estados de carregando/vazio/erro e decisões de navegação que ela queira registrar -->
@@ -64,11 +67,21 @@ O grupo decidiu entregar **apenas o CP5** e deixar o CP6 para depois, porque nã
 
 ---
 
+## Vídeo de demonstração
+
+[Assistir à demonstração do app](https://drive.google.com/file/d/1OLeK9_m8gG6YlnXLTvK4OCkn_0Fb6FgU/view?usp=sharing)
+
 ## Telas
 
 | Feed | Home | Perfil |
 |----------|----------|----------|
 | ![feed](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/Feed.png) | ![home](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaHome.png) | ![perfil](https://raw.githubusercontent.com/arthurreisbs/lovic/main/assets/images/TelaPerfil.png) |
+
+Prints do app rodando:
+
+| Feed | Meu perfil | Chats |
+|----------|----------|----------|
+| ![feed](docs/prints/feed.png) | ![meu perfil](docs/prints/perfil.png) | ![chats](docs/prints/chats.png) |
 
 ### Fluxo principal
 
