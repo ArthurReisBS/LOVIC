@@ -7,6 +7,7 @@
 3. **Authentication → Sign In / Providers → Email**: desligue **Confirm email**.
    O protótipo cadastra direto, sem código por email (o plano gratuito manda poucos emails por hora).
 4. **Project Settings → API Keys**: copie a **URL** e a **publishable key** para o grupo.
+5. **Esqueceu a senha** (código por email): em **Authentication → Email Templates → Reset Password**, troque o link do corpo do email por `Seu código de redefinição: {{ .Token }}`. O app pede esse código de 6 dígitos e a senha nova, sem precisar abrir link (funciona no desktop).
 
 ## Rodar o app ligado ao banco (cada um)
 
@@ -35,6 +36,8 @@ Regras (RLS): quem está logado vê os perfis; cada um só edita o próprio. Men
 - **Login com Google/Spotify**, busca por lugares, localização, câmera e menus de três pontinhos: avisam "Em breve" / "chega no CP06".
 
 ## Como testar
+
+0. **Esqueceu a senha**: Login → *Esqueceu a senha?* → email → o código chega por email → digite o código e a senha nova → volta ao login → entre com a senha nova. O "olhinho" nos campos de senha mostra/esconde o texto.
 
 1. **Criar uma conta** → email → nome → username → senha → cai na Home.
 2. No Supabase, **Table Editor → profiles**: a linha nova aparece com os dados do cadastro.

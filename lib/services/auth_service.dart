@@ -118,6 +118,30 @@ class AuthService {
 
   static Future<void> signOut() => _client.auth.signOut();
 
+  /// Manda por email um código de 6 dígitos para redefinir a senha. O texto do
+  /// email ("Reset Password" no Supabase) precisa usar `{{ .Token }}`.
+  static Future<void> sendPasswordReset(String email) async {
+    await _guard(() => _client.auth.resetPasswordForEmail(email.trim()));
+  }
+
+  /// Confere o código recebido por email e troca a senha. No fim sai da conta
+  /// para a pessoa entrar de novo já com a senha nova.
+  static Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _guard(() async {
+      await _client.auth.verifyOTP(
+        email: email.trim(),
+        token: code.trim(),
+        type: OtpType.recovery,
+      );
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
+      await _client.auth.signOut();
+    });
+  }
+
   /// Perfil de quem está logado, ou null em modo demonstração.
   static Future<MyProfile?> fetchMyProfile() async {
     if (!isLoggedIn) return null;
@@ -226,6 +250,8 @@ class AuthService {
     'email_exists' => 'Esse email já tem conta. Faça login.',
     'weak_password' => 'Senha fraca: use pelo menos 6 caracteres.',
     'email_address_invalid' || 'validation_failed' => 'Email inválido.',
+    'otp_expired' => 'Código inválido ou expirado. Peça um novo.',
+    'same_password' => 'Escolha uma senha diferente da anterior.',
     'email_not_confirmed' => 'Confirme o email antes de entrar.',
     'over_email_send_rate_limit' || 'over_request_rate_limit' =>
       'Muitas tentativas. Espere um pouco e tente de novo.',

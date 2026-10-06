@@ -13,6 +13,7 @@ import '../../widgets/shared/hover_scale.dart';
 import '../../widgets/shared/lovic_logo.dart';
 import '../../services/auth_service.dart';
 import '../home/home_screen.dart';
+import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget{
@@ -31,7 +32,8 @@ class _LoginScreenState extends State<LoginScreen>{
         AuthTextField(controller:_email,hintText:'Digite seu email...',keyboardType:TextInputType.emailAddress),
         const SizedBox(height:16),
         AuthTextField(controller:_password,hintText:'Digite sua senha...',obscureText:true),
-        const SizedBox(height:20),
+        Align(alignment:Alignment.centerRight,child:HoverScale(child:GestureDetector(onTap:_forgotPassword,child:Padding(padding:const EdgeInsets.only(top:8,right:8),child:Text('Esqueceu a senha?',style:AppTextStyles.linkOrange.copyWith(fontSize:13)))))),
+        const SizedBox(height:12),
         GradientButton(label:_loading?'Entrando...':'Entrar',onPressed:_loading?null:_signIn),
         const _OrDivider(),
         SocialLoginButton(icon:Padding(padding:const EdgeInsets.only(left:20),child:SizedBox(width:20,height:20,child:SvgPicture.asset('assets/images/google_logo.svg'))),label:'Login com Google',backgroundColor:AppColors.socialButtonLight,textColor:AppColors.textSecondary,onPressed:_socialLogin),
@@ -42,6 +44,10 @@ class _LoginScreenState extends State<LoginScreen>{
       ])),
     ))))
   );
+  Future<void> _forgotPassword()async{
+    final done=await Navigator.of(context).push<bool>(noTransitionRoute(ForgotPasswordScreen(initialEmail:_email.text.trim())));
+    if(done==true&&mounted)_showError('Senha alterada! Entre com a senha nova.');
+  }
   Future<void> _signIn()async{
     final email=_email.text.trim(),password=_password.text;
     // Sem .env: modo demonstração, entra direto como antes.
